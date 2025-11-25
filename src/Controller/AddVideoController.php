@@ -12,6 +12,7 @@ class AddVideoController implements Controller
     }
     public function processaRequisicao():void
     {
+
         $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
         if ($url === false){
             header('Location: /');
@@ -22,7 +23,13 @@ class AddVideoController implements Controller
             header('Location: /');
             exit();
         }
-        $this->videoRepository->addVideo(new Video(null, $url, $title));
+
+        $video = new Video(null, $url, $title);
+        if($_FILES['image']['error'] === UPLOAD_ERR_OK){
+            move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . "/../../public/img/uploads" . $_FILES['image']['name'] );
+            $video->setFilePath($_FILES['image']['name']);
+        }
+        $this->videoRepository->addVideo($video);
         header('Location: /');
     }
 }

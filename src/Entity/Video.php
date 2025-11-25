@@ -5,15 +5,16 @@ namespace Alura\Mvc\Entity;
 Class Video
 {
     public readonly string $url;
-    
+    private ?string $filePath = null;
     public function __construct(
         public readonly ?int $id,
         string $url, 
-        public readonly string $title
-
+        public readonly string $title,
+        ?string $filePath = null
         )
     {
         $this->setUrl($url);
+        $this->filePath = $filePath;
 
     }
     public function setUrl(string $url){
@@ -22,5 +23,13 @@ Class Video
             exit();
         }
         $this->url = $url;
+    }
+    public function setFilePath(string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
+    public function getFilePath(): ?string
+    {
+        return $this->filePath;
     }
 }

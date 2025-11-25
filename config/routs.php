@@ -8,6 +8,7 @@ use Alura\Mvc\Controller\RemoveVideoController;
 use Alura\Mvc\Controller\VideoListController;
 use Alura\Mvc\Controller\LoginController;
 use Alura\Mvc\Controller\LoginValidationController;
+use Alura\Mvc\Controller\LogoutController;
 
 return [
     '/' => VideoListController::class,
@@ -17,5 +18,7 @@ return [
     '/novo-video' => AddVideoController::class,
     '/editado' => EditController::class,
     '/login' => LoginController::class,
-    '/login/auth' => LoginValidationController::class
+    '/login/auth' => LoginValidationController::class,
+    '/logout' => LogoutController::class
+
 ];

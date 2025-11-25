@@ -12,8 +12,9 @@ class LoginValidationController implements Controller
     {
         $email = filter_input(INPUT_POST, "email", FILTER_VALIDATE_EMAIL);
         $password = filter_input(INPUT_POST, "password");
-        $userData = $this->userRepository->verifyUser($email, $password);
-        if ($userData){
+        $correctPass = $this->userRepository->verifyUser($email, $password);
+        if ($correctPass){
+            $_SESSION['logado'] = true;
             header("location: /");
         } else {
             header("location: /login?sucesso=0");

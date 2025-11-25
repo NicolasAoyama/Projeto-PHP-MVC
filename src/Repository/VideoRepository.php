@@ -15,14 +15,17 @@ class VideoRepository{
         return new Video(
             $video['id'],
             $video['url'],
-            $video['title']
+            $video['title'],
+            $video['image_path']
+            
         );
     }
     public function addVideo(Video $video): bool{
-        $sql1 = "INSERT INTO videos (url, title) VALUES (?, ?)";
+        $sql1 = "INSERT INTO videos (url, title, image_path) VALUES (?, ?, ?)";
         $statement = $this->pdo->prepare($sql1);
         $statement->bindValue(1, $video->url);
         $statement->bindValue(2, $video->title);
+        $statement->bindValue(3, $video->getFilePath());
         return $statement->execute();
     
     }
@@ -33,14 +36,16 @@ class VideoRepository{
         return $statement->execute();
     }
     public function editVideo(Video $video): bool{
-        $sql = "UPDATE videos SET url = :url, title = :title WHERE id = :id";
+        $sql = "UPDATE videos SET url = :url, title = :title, image_path = :image_path WHERE id = :id";
         $statement = $this->pdo->prepare($sql);
         $statement->bindValue(':url', $video->url);
         $statement->bindValue(':title', $video->title);
        $statement->bindValue(':id', $video->id); 
+       $statement->bindValue(':image_path', $video->getFilePath()); 
         return $statement->execute();
     }
     public function listaVideos(): array{
+        
         $sql = "SELECT * FROM videos";
         $statement = $this->pdo->prepare($sql);
         $statement->execute();
