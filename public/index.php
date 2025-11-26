@@ -15,6 +15,7 @@ $path_info = $_SERVER['PATH_INFO'] ?? "/";
 $key = "$path_info";
 
 session_start();
+session_regenerate_id();
 $isLoggin = str_starts_with($path_info, "/login");
 if (!array_key_exists('logado', $_SESSION )&& !$isLoggin){
     header("location: /login");

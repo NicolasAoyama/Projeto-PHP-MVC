@@ -1,12 +1,13 @@
 <?php 
 namespace Alura\Mvc\Controller;
 
+use Alura\Mvc\Helper\HtmlRendererTrait;
 use Alura\Mvc\Repository\VideoRepository;
 use PDO;
 
 class VideoListController implements Controller
 {
-    
+    use HtmlRendererTrait;
     public function __construct(private VideoRepository $videoRepository)
     {
     }
@@ -15,6 +16,7 @@ class VideoListController implements Controller
     {
 
         $videoList = $this->videoRepository->listaVideos();
-        require_once __DIR__ . "/../../views/videoList.php";
+        echo $this->renderTemplate('videoList', ['videoList' => $videoList] );
+
     }
 }

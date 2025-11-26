@@ -36,6 +36,15 @@ class UserRepository
         if ($userData === false){
             return false;
         }
+
+        if (password_needs_rehash($userData['password'], PASSWORD_ARGON2ID)){
+            $sql2 = "UPDATE users SET password = ? WHERE id = ?";
+            $statement = $this->pdo->prepare($sql2);
+            $statement->bindValue(1, password_hash($password, PASSWORD_ARGON2ID));
+            $statement->bindValue(2, $userData['id']);
+        }
         return password_verify($password, $userData['password']);
+
+
     }
 }
