@@ -5,29 +5,36 @@ use Alura\Mvc\Entity\Video;
 use Alura\Mvc\Helper\FlashMessageTrait;
 use Alura\Mvc\Repository\VideoRepository;
 use finfo;
+use Nyholm\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class EditController implements Controller
+class EditController implements RequestHandlerInterface
 {
     use FlashMessageTrait;
     public function __construct(private VideoRepository $videoRepository)
     {
     }
-    public function processaRequisicao(): void
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $parsedBody = $request->getParsedBody();
+        $id = filter_var($parsedBody['id'], FILTER_VALIDATE_INT);
 
-        $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
+        $url = filter_var($parsedBody['url'], FILTER_SANITIZE_URL);
         if (!filter_var($url, FILTER_VALIDATE_URL)){
             $this->addErrorMessage("Insira uma URL valida");
-            header("Location: /editar-video?id={$id}");
-            exit();
+            return new Response(302, [
+                'Location' => "/editar-video?id={$id}"
+            ]);
         }
         
         $title = filter_input(INPUT_POST, 'titulo');
-            if ($title === false){
+            if ($title === ""){
             $this->addErrorMessage("Insira um Titulo");
-            header('Location: /editar-video');
-            exit();
+            return new Response(302, [
+                'Location' => "/editar-video?id={$id}"
+            ]);
         }
 
 
@@ -36,19 +43,26 @@ class EditController implements Controller
         $videoPath = $video->getFilePath();
         $videoEditado = new Video($id, $url, $title, $videoPath);
 
-        if($_FILES['image']['error'] === UPLOAD_ERR_OK){
-            $fileTempName = uniqid() . "_" . pathinfo($_FILES['image']['name'], PATHINFO_BASENAME);
+        //Adicionando imagem ao video
+        $files = $request->getUploadedFiles();
+        $uploadedImage = $files['image'];
+        if($uploadedImage->getError() === UPLOAD_ERR_OK){
             $finfo = new finfo(FILEINFO_MIME_TYPE);
-            $mimetype = $finfo->file($_FILES['image']['tmp_name']);
+            $tmpFile = $uploadedImage->getStream()->getMetaData('uri');
+            $mimetype = $finfo->file($tmpFile);
 
             if(str_starts_with($mimetype, "image/")){ 
-                move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . "/../../public/img/uploads/" . $fileTempName );
-                $videoEditado->setFilePath($fileTempName);
+                $safeFileName = uniqid() . "_" . pathinfo($uploadedImage->getClientFileName(), PATHINFO_BASENAME);
+                $uploadedImage->moveTo( __DIR__ . "/../../public/img/uploads/" . $safeFileName);
+                $videoEditado->setFilePath($safeFileName);
             }
         }
         
         $this->videoRepository->editVideo($videoEditado);
-        header('Location: /');
+        return new Response(302, [
+                'Location' => "/"
+            ]);
+
     }
 
 }
