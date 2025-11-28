@@ -2,6 +2,7 @@
 namespace Alura\Mvc\Controller;
 use Alura\Mvc\Controller\Controller;
 use Alura\Mvc\Helper\HtmlRendererTrait;
+use League\Plates\Engine;
 use Nyholm\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -10,13 +11,18 @@ use Psr\Http\Server\RequestHandlerInterface;
 class LoginController implements RequestHandlerInterface
 {
     use HtmlRendererTrait;
+
+    public function __construct(private Engine $templates)
+    {
+
+    }
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if($_SESSION['logado'] === true){
             return new Response(302, ['Location' => '/']);
 
         }
-        return new Response(200, [], $this->renderTemplate('login'));
+        return new Response(200, [], $this->templates->render('login'));
 
     } 
 }

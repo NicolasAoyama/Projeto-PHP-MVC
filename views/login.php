@@ -1,4 +1,4 @@
-    <?php require_once __DIR__ . "/inicio-html.php";?>
+    <?php $this->insert("inicio-html");?>
     <main class="container">
 
         <form class="container__formulario" method="post" action="/login/auth">

@@ -1,17 +1,12 @@
 <?php
 
-use Alura\Mvc\Repository\UserRepository;
-use Alura\Mvc\Repository\VideoRepository;
 use Nyholm\Psr7\Factory\Psr17Factory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . "../../conexao.php";
-
-
-$repository = new VideoRepository($pdo);
-$userRepository = new UserRepository($pdo);
 
 $routs = require_once __DIR__ . "/../config/routs.php";
+$diContainer = require_once __DIR__ . "/../config/dependencies.php";
+
 $path_info = $_SERVER['PATH_INFO'] ?? "/";
 $key = "$path_info";
 
@@ -26,9 +21,9 @@ if (!array_key_exists('logado', $_SESSION )&& !$isLoggin){
     if(array_key_exists($key, $routs)){
         $controllerClass = $routs["$key"];
         if(str_starts_with($path_info, "/login")){
-            $controller = new $controllerClass($userRepository);
+            $controller = $diContainer->get($controllerClass);
         } else{
-            $controller = new $controllerClass($repository);
+            $controller = $diContainer->get($controllerClass);
         }
    
     }else{

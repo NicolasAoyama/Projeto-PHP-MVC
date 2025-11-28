@@ -1,5 +1,5 @@
-        <?php require_once __DIR__ . '/inicio-html.php';
-                ?>
+        <?php $this->layout('layout');?>
+        
         <?php if(isset($_SESSION["error_message"])):?>
         <h2 class="formulario__titulo erro">
             <?= $_SESSION["error_message"]; ?>
